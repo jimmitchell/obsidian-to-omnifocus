@@ -9,30 +9,36 @@ export interface BuildUrlOpts {
 
 export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
 	const { task, tags, project, obsidianUrl } = opts;
-	const params = new URLSearchParams();
-	params.set("name", task.title);
+	const params: [string, string][] = [];
+	params.push(["name", task.title]);
 
 	const noteParts: string[] = [];
 	const trimmedBody = task.body.trim();
 	if (trimmedBody) noteParts.push(trimmedBody);
 	noteParts.push(obsidianUrl);
-	params.set("note", noteParts.join("\n\n"));
+	params.push(["note", noteParts.join("\n\n")]);
 
-	if (project) params.set("project", project);
-	if (tags.length > 0) params.set("tags", tags.join(","));
-	if (task.fields.due) params.set("due", task.fields.due);
-	if (task.fields.defer) params.set("defer", task.fields.defer);
-	if (task.fields.flag) params.set("flag", "true");
+	if (project) params.push(["project", project]);
+	if (tags.length > 0) params.push(["tags", tags.join(",")]);
+	if (task.fields.due) params.push(["due", task.fields.due]);
+	if (task.fields.defer) params.push(["defer", task.fields.defer]);
+	if (task.fields.flag) params.push(["flag", "true"]);
 	if (task.fields.estimate !== undefined) {
-		params.set("estimate", String(task.fields.estimate));
+		params.push(["estimate", String(task.fields.estimate)]);
 	}
 
-	return `omnifocus:///add?${params.toString()}`;
+	return `omnifocus:///add?${encodeQuery(params)}`;
 }
 
 export function buildObsidianUrl(vaultName: string, filePath: string): string {
-	const params = new URLSearchParams();
-	params.set("vault", vaultName);
-	params.set("file", filePath);
-	return `obsidian://open?${params.toString()}`;
+	return `obsidian://open?${encodeQuery([
+		["vault", vaultName],
+		["file", filePath],
+	])}`;
+}
+
+function encodeQuery(params: [string, string][]): string {
+	return params
+		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+		.join("&");
 }
