@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin, TFile } from "obsidian";
+import { Editor, MarkdownFileInfo, MarkdownView, Notice, Plugin, TFile } from "obsidian";
 import { parseUncompletedTasks, type ParsedTask } from "./parser";
 import { buildObsidianUrl, buildOmnifocusUrl } from "./omnifocus";
 import { DEFAULT_SETTINGS, type PluginSettings, SettingsTab } from "./settings";
@@ -12,8 +12,8 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 		this.addCommand({
 			id: "send-uncompleted-tasks-to-omnifocus",
 			name: "Send uncompleted tasks to OmniFocus",
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				this.sendTasks(editor, view);
+			editorCallback: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
+				this.sendTasks(editor, ctx);
 			},
 		});
 
@@ -28,8 +28,8 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private sendTasks(editor: Editor, view: MarkdownView): void {
-		const file = view.file;
+	private sendTasks(editor: Editor, ctx: MarkdownView | MarkdownFileInfo): void {
+		const file = ctx.file;
 		if (!file) {
 			new Notice("No active file.");
 			return;
