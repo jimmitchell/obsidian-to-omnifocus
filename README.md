@@ -76,21 +76,59 @@ Sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFoc
 
 If a Dataview field on a task can't be parsed (for example, `[due:: tomorrow]` instead of an ISO date), the field is dropped and the task is sent without it. A Notice lists what was skipped so you can fix it.
 
-## Manual installation
+## Installation
 
-1. Download the latest `main.js`, `manifest.json`, and `styles.css` (if present) from [Releases](https://github.com/jimmitchell/obsidian-to-omnifocus/releases).
-2. Place them in `<vault>/.obsidian/plugins/obsidian-to-omnifocus/`.
-3. Enable the plugin in Obsidian's Community Plugins settings.
+This plugin is not (yet) in the Obsidian Community Plugins directory, so install it manually using one of the methods below.
+
+### Sideload from source (recommended for now)
+
+This builds the plugin from the latest commit on `main` and symlinks it into your vault, so a `git pull` + `npm run build` is all it takes to update.
+
+```bash
+# 1. Clone the repo wherever you keep code
+git clone https://github.com/jimmitchell/obsidian-to-omnifocus.git
+cd obsidian-to-omnifocus
+
+# 2. Install deps and build
+npm install
+npm run build
+
+# 3. Symlink into your vault's plugins folder
+#    Replace the path with your actual vault path.
+ln -s "$(pwd)" "/path/to/YourVault/.obsidian/plugins/obsidian-to-omnifocus"
+```
+
+Then in Obsidian:
+
+1. **Settings → Community plugins** — if it says "Community plugins are currently off", click **Turn on community plugins**.
+2. Scroll down to **Installed plugins** (below the "Browse" button); the refresh icon there forces a rescan if needed.
+3. Toggle **Obsidian to OmniFocus** on.
+
+To update later: `git pull && npm run build`, then in Obsidian disable and re-enable the plugin (or run "Reload app without saving" from the command palette).
+
+### Manual install from a release
+
+Once tagged releases are available on the [Releases](https://github.com/jimmitchell/obsidian-to-omnifocus/releases) page:
+
+1. Download `main.js`, `manifest.json`, and `versions.json` from the release.
+2. Create the folder `<vault>/.obsidian/plugins/obsidian-to-omnifocus/` and drop the three files inside.
+3. Enable the plugin in Settings → Community plugins → Installed plugins.
+
+### Troubleshooting
+
+- **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/obsidian-to-omnifocus/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
+- **Toggle is on but the command does nothing** — open **View → Toggle Developer Tools → Console** and look for a load error.
+- **Tasks arrive in OmniFocus with `+` instead of spaces** — make sure you're on a build from commit `cbcaea4` or later (`npm run build` after pulling).
 
 ## Development
 
 ```bash
 npm install
-npm run dev    # esbuild watch mode
+npm run dev    # esbuild watch mode — rebuilds on save
 npm run build  # type-check + production build
 ```
 
-To test inside a vault, symlink the project directory into `<vault>/.obsidian/plugins/obsidian-to-omnifocus`.
+If you sideloaded via the symlink above, `npm run dev` will keep `main.js` fresh; just disable + re-enable the plugin in Obsidian to load the new build.
 
 ## License
 
