@@ -7,6 +7,7 @@ export interface PluginSettings {
 	tagsFrontmatterKey: string;
 	projectFrontmatterKey: string;
 	appendInlineTagsAsOmnifocusTags: boolean;
+	skipQuickEntry: boolean;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	tagsFrontmatterKey: "omnifocus_tags",
 	projectFrontmatterKey: "omnifocus_project",
 	appendInlineTagsAsOmnifocusTags: false,
+	skipQuickEntry: false,
 };
 
 export class SettingsTab extends PluginSettingTab {
@@ -85,6 +87,20 @@ export class SettingsTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.projectFrontmatterKey =
 							value.trim() || "omnifocus_project";
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Skip OmniFocus Quick Entry")
+			.setDesc(
+				"Save tasks straight to their destination instead of opening the Quick Entry window for each one."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.skipQuickEntry)
+					.onChange(async (value) => {
+						this.plugin.settings.skipQuickEntry = value;
 						await this.plugin.saveSettings();
 					})
 			);

@@ -56,6 +56,7 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 				tags: dedupe(taskTags),
 				project,
 				obsidianUrl,
+				autosave: this.settings.skipQuickEntry,
 			});
 			window.open(url);
 			for (const sf of task.skippedFields) {

@@ -5,10 +5,11 @@ export interface BuildUrlOpts {
 	tags: string[];
 	project: string;
 	obsidianUrl: string;
+	autosave: boolean;
 }
 
 export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
-	const { task, tags, project, obsidianUrl } = opts;
+	const { task, tags, project, obsidianUrl, autosave } = opts;
 	const params: [string, string][] = [];
 	params.push(["name", task.title]);
 
@@ -26,6 +27,7 @@ export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
 	if (task.fields.estimate !== undefined) {
 		params.push(["estimate", String(task.fields.estimate)]);
 	}
+	if (autosave) params.push(["autosave", "true"]);
 
 	return `omnifocus:///add?${encodeQuery(params)}`;
 }

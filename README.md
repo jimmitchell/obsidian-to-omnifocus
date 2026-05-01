@@ -70,6 +70,7 @@ Sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFoc
 | Tags frontmatter key | `omnifocus_tags` | YAML key on a note that overrides the default tag list. |
 | Project frontmatter key | `omnifocus_project` | YAML key on a note that overrides the default project. |
 | Forward inline `#tags` | off | When on, `#tags` written on a task line are appended to the OmniFocus tag list. |
+| Skip OmniFocus Quick Entry | off | When on, tasks are saved straight to their destination via `autosave=true` instead of opening the Quick Entry window. |
 
 ## Bad input
 
