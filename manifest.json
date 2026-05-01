@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-to-omnifocus",
+	"name": "Obsidian to OmniFocus",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox, then mark them complete in Obsidian.",
+	"author": "Jim Mitchell",
+	"authorUrl": "https://github.com/jimmitchell",
+	"isDesktopOnly": false
+}
