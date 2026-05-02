@@ -1,6 +1,11 @@
-import { Editor, MarkdownFileInfo, MarkdownView, Notice, Plugin, TFile } from "obsidian";
+import { Editor, MarkdownFileInfo, MarkdownView, Notice, Platform, Plugin, TFile } from "obsidian";
 import { parseUncompletedTasks, type ParsedTask } from "./parser";
-import { buildObsidianUrl, buildOmnifocusUrl } from "./omnifocus";
+import {
+	buildObsidianUrl,
+	buildOmniAutomationUrl,
+	buildOmnifocusUrl,
+	buildPluginInvocationUrl,
+} from "./omnifocus";
 import { DEFAULT_SETTINGS, type PluginSettings, SettingsTab } from "./settings";
 
 export default class ObsidianToOmnifocusPlugin extends Plugin {
@@ -45,22 +50,44 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 		const project = this.resolveProject(file);
 		const obsidianUrl = buildObsidianUrl(this.app.vault.getName(), file.path);
 
+		const omniJsModeAvailable =
+			(this.settings.sendMode === "omnijs" || this.settings.sendMode === "plugin") &&
+			Platform.isMacOS;
 		const skipped: string[] = [];
 		for (const task of tasks) {
 			const taskTags = [...baseTags];
 			if (this.settings.appendInlineTagsAsOmnifocusTags) {
 				taskTags.push(...task.inlineTags);
 			}
-			const url = buildOmnifocusUrl({
+			const buildOpts = {
 				task,
 				tags: dedupe(taskTags),
 				project,
 				obsidianUrl,
 				autosave: this.settings.skipQuickEntry,
-			});
+			};
+			const needsOmniJs = task.fields.planned !== undefined || task.fields.repeat !== undefined;
+			const useOmniJs = omniJsModeAvailable && needsOmniJs;
+			let url: string;
+			if (useOmniJs) {
+				url =
+					this.settings.sendMode === "plugin"
+						? buildPluginInvocationUrl(buildOpts)
+						: buildOmniAutomationUrl(buildOpts);
+			} else {
+				url = buildOmnifocusUrl(buildOpts);
+			}
 			window.open(url);
 			for (const sf of task.skippedFields) {
 				skipped.push(`"${task.title}": ${sf.key} (${sf.reason})`);
+			}
+			if (!useOmniJs) {
+				if (task.fields.planned) {
+					skipped.push(`"${task.title}": planned (requires OmniAutomation or Plug-in send mode on macOS)`);
+				}
+				if (task.fields.repeat) {
+					skipped.push(`"${task.title}": repeat (requires OmniAutomation or Plug-in send mode on macOS)`);
+				}
 			}
 		}
 
