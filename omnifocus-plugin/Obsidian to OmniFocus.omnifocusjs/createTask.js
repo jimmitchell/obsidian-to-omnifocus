@@ -9,6 +9,16 @@
 	"paletteLabel": "Create Task from Obsidian"
 }*/
 (() => {
+	function localDate(s) {
+		const m = String(s).match(
+			/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/
+		);
+		if (!m) return new Date(s);
+		const y = +m[1], mo = +m[2] - 1, d = +m[3];
+		if (m[4] === undefined) return new Date(y, mo, d);
+		return new Date(y, mo, d, +m[4], +m[5], +(m[6] || 0));
+	}
+
 	const action = new PlugIn.Action(function (selection, sender) {
 		const payload = globalThis.__o2of_payload;
 		if (!payload || typeof payload !== "object") return;
@@ -46,14 +56,4 @@
 		return true;
 	};
 	return action;
-
-	function localDate(s) {
-		const m = String(s).match(
-			/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/
-		);
-		if (!m) return new Date(s);
-		const y = +m[1], mo = +m[2] - 1, d = +m[3];
-		if (m[4] === undefined) return new Date(y, mo, d);
-		return new Date(y, mo, d, +m[4], +m[5], +(m[6] || 0));
-	}
 })();
