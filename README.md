@@ -91,7 +91,7 @@ The plug-in mode ships a small companion plug-in that lives inside OmniFocus. Ap
 **One-time setup:**
 
 1. **Enable external scripts.** In OmniFocus, choose **Automation → Configure…** from the menu bar and turn on **Accept scripts from external applications**.
-2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop the entire `omnifocus-plugin/Obsidian to OmniFocus.omnifocusjs` folder from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
+2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop `omnifocus-plugin/obsidian-to-omnifocus.omnifocusjs` from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
 3. **Switch send mode.** In the Obsidian plugin's settings, set **Send mode** to **OmniFocus plug-in**.
 4. **Approve once.** Send a task with a `planned::` or `repeat::` field. OmniFocus shows its security prompt for the bootstrap script — scroll to the bottom and click **Approve**. Future sends with planned/repeat run silently.
 

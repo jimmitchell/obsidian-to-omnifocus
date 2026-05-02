@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-to-omnifocus",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox.",
 	"main": "main.js",
 	"scripts": {

@@ -1,12 +1,14 @@
+/* global PlugIn Task Tag flattenedTags flattenedProjects moveTasks */
 /*{
 	"type": "action",
+	"targets": ["omnifocus"],
 	"author": "Jim Mitchell",
-	"identifier": "createTask",
+	"identifier": "org.jimmitchell.obsidian-to-omnifocus",
 	"version": "1.0",
-	"description": "Create a task from a JSON payload sent by the Obsidian-to-OmniFocus plugin.",
+	"description": "Receives task creation requests from the Obsidian-to-OmniFocus plugin so they can be approved once instead of on every send.",
 	"label": "Create Task from Obsidian",
 	"shortLabel": "Create Task",
-	"paletteLabel": "Create Task from Obsidian"
+	"paletteLabel": "Create Task"
 }*/
 (() => {
 	function localDate(s) {
@@ -20,7 +22,10 @@
 	}
 
 	const action = new PlugIn.Action(function (selection, sender) {
-		const payload = globalThis.__o2of_payload;
+		let payload = globalThis.__o2of_payload;
+		if (typeof payload === "string") {
+			try { payload = JSON.parse(payload); } catch (e) { return; }
+		}
 		if (!payload || typeof payload !== "object") return;
 
 		const t = new Task(String(payload.title || ""));
@@ -52,8 +57,10 @@
 			);
 		}
 	});
+
 	action.validate = function (selection, sender) {
 		return true;
 	};
+
 	return action;
 })();

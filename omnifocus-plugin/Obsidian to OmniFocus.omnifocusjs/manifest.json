@@ -1,6 +1,0 @@
-{
-	"identifier": "org.jimmitchell.obsidian-to-omnifocus",
-	"version": "1.0",
-	"author": "Jim Mitchell",
-	"description": "Receives task creation requests from the Obsidian-to-OmniFocus plugin so they can be approved once instead of on every send."
-}

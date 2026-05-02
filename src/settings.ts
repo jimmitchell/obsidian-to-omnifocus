@@ -115,7 +115,7 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Skip OmniFocus Quick Entry")
 			.setDesc(
-				"Save tasks straight to their destination instead of opening the Quick Entry window for each one. No effect in OmniAutomation mode (Quick Entry is never opened there)."
+				"Save tasks straight to their destination instead of opening the Quick Entry window for each one. No effect in OmniAutomation or Plug-in mode (Quick Entry is never opened there)."
 			)
 			.addToggle((toggle) =>
 				toggle

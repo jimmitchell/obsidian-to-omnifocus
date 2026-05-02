@@ -38,7 +38,7 @@ export function buildOmniAutomationUrl(opts: BuildUrlOpts): string {
 }
 
 export const PLUGIN_BOOTSTRAP_SCRIPT =
-	`(function(a){globalThis.__o2of_payload=a;PlugIn.find("org.jimmitchell.obsidian-to-omnifocus").action("createTask").perform();})(argument)`;
+	`(function(a){globalThis.__o2of_payload=a;PlugIn.find("org.jimmitchell.obsidian-to-omnifocus").actions[0].perform();})(argument)`;
 
 export function buildPluginInvocationUrl(opts: BuildUrlOpts): string {
 	const { task, tags, project, obsidianUrl } = opts;
