@@ -45,7 +45,7 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 		const project = this.resolveProject(file);
 		const obsidianUrl = buildObsidianUrl(this.app.vault.getName(), file.path);
 
-		const useOmniJs = this.settings.sendMode === "omnijs" && Platform.isMacOS;
+		const omniJsAvailable = this.settings.sendMode === "omnijs" && Platform.isMacOS;
 		const skipped: string[] = [];
 		for (const task of tasks) {
 			const taskTags = [...baseTags];
@@ -59,6 +59,8 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 				obsidianUrl,
 				autosave: this.settings.skipQuickEntry,
 			};
+			const needsOmniJs = task.fields.planned !== undefined || task.fields.repeat !== undefined;
+			const useOmniJs = omniJsAvailable && needsOmniJs;
 			const url = useOmniJs ? buildOmniAutomationUrl(buildOpts) : buildOmnifocusUrl(buildOpts);
 			window.open(url);
 			for (const sf of task.skippedFields) {
@@ -66,10 +68,10 @@ export default class ObsidianToOmnifocusPlugin extends Plugin {
 			}
 			if (!useOmniJs) {
 				if (task.fields.planned) {
-					skipped.push(`"${task.title}": planned (requires OmniAutomation send mode)`);
+					skipped.push(`"${task.title}": planned (requires OmniAutomation send mode on macOS)`);
 				}
 				if (task.fields.repeat) {
-					skipped.push(`"${task.title}": repeat (requires OmniAutomation send mode)`);
+					skipped.push(`"${task.title}": repeat (requires OmniAutomation send mode on macOS)`);
 				}
 			}
 		}

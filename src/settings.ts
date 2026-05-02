@@ -98,7 +98,7 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Send mode")
 			.setDesc(
-				"URL scheme works everywhere. OmniAutomation unlocks plannedDate and repeats but is macOS-only — iOS falls back to URL scheme automatically."
+				"URL scheme works everywhere with no prompts. OmniAutomation (macOS only) is used per-task only when a task uses plannedDate or repeats — those tasks will trigger an OmniFocus security prompt. iOS always uses the URL scheme."
 			)
 			.addDropdown((dd) =>
 				dd
