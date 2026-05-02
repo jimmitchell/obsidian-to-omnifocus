@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type ObsidianToOmnifocusPlugin from "./main";
 
-export type SendMode = "url" | "omnijs";
+export type SendMode = "url" | "omnijs" | "plugin";
 
 export interface PluginSettings {
 	defaultTags: string;
@@ -98,12 +98,13 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Send mode")
 			.setDesc(
-				"URL scheme works everywhere with no prompts. OmniAutomation (macOS only) is used per-task only when a task uses plannedDate or repeats — those tasks will trigger an OmniFocus security prompt. iOS always uses the URL scheme."
+				"URL scheme works everywhere with no prompts but cannot set plannedDate or repeats. OmniAutomation (macOS) supports those fields but prompts on every send. Plug-in (macOS, install required) supports those fields and prompts only once. Plain tasks always use the URL scheme. iOS always uses the URL scheme."
 			)
 			.addDropdown((dd) =>
 				dd
 					.addOption("url", "URL scheme (omnifocus:///add)")
-					.addOption("omnijs", "OmniAutomation (macOS only)")
+					.addOption("omnijs", "OmniAutomation (macOS, prompts every send)")
+					.addOption("plugin", "OmniFocus plug-in (macOS, install required, prompts once)")
 					.setValue(this.plugin.settings.sendMode)
 					.onChange(async (value) => {
 						this.plugin.settings.sendMode = value as SendMode;

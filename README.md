@@ -72,6 +72,31 @@ Sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFoc
 | Forward inline `#tags` | off | When on, `#tags` written on a task line are appended to the OmniFocus tag list. |
 | Skip OmniFocus Quick Entry | off | When on, tasks are saved straight to their destination via `autosave=true` instead of opening the Quick Entry window. |
 
+## Send modes
+
+Three modes are available in settings. The default (URL scheme) works everywhere with no security prompts but cannot set `plannedDate` or repeating rules. Tasks that need those fields are routed through OmniAutomation per-task; plain tasks always use the URL scheme.
+
+| Mode | Platform | Prompts | `plannedDate` / `repeat` |
+|---|---|---|---|
+| URL scheme (default) | macOS, iOS, iPadOS | Never | Skipped (Notice lists what was dropped) |
+| OmniAutomation | macOS only | Every send of a task with `planned`/`repeat` | Supported |
+| OmniFocus plug-in | macOS only | Once per script approval | Supported |
+
+### OmniFocus plug-in mode
+
+The plug-in mode ships a small companion plug-in that lives inside OmniFocus. Approval is keyed to a fixed bootstrap script, so you approve it once and subsequent sends run silently.
+
+**One-time setup:**
+
+1. In OmniFocus → **Settings → General → Automation**, enable external script execution if it isn't already.
+2. Copy `omnifocus-plugin/Obsidian to OmniFocus.omnifocusjs` (the entire folder) into your OmniFocus plug-ins folder. The easiest way:
+   - In OmniFocus, **Automation → Plug-Ins…** and click **Reveal Plug-Ins Folder** to open it in Finder.
+   - Drop the `.omnifocusjs` folder there. (If you use the iCloud-synced folder, the plug-in is available on iOS too — though plug-in send mode itself is macOS-only.)
+3. Switch the plugin's **Send mode** setting to **OmniFocus plug-in**.
+4. Send a task with a `planned::` or `repeat::` field. OmniFocus will show its security prompt for the bootstrap script. Scroll to the bottom and click **Approve**. Future sends do not prompt.
+
+If you ever change the bootstrap script (plug-in updates), OmniFocus will prompt for re-approval the next time it runs.
+
 ## Bad input
 
 If a Dataview field on a task can't be parsed (for example, `[due:: tomorrow]` instead of an ISO date), the field is dropped and the task is sent without it. A Notice lists what was skipped so you can fix it.

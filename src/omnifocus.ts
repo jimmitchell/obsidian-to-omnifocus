@@ -37,6 +37,35 @@ export function buildOmniAutomationUrl(opts: BuildUrlOpts): string {
 	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(script)}`;
 }
 
+export const PLUGIN_BOOTSTRAP_SCRIPT =
+	`(function(a){globalThis.__o2of_payload=a;PlugIn.find("org.jimmitchell.obsidian-to-omnifocus").action("createTask").perform();})(argument)`;
+
+export function buildPluginInvocationUrl(opts: BuildUrlOpts): string {
+	const { task, tags, project, obsidianUrl } = opts;
+
+	const noteParts: string[] = [];
+	const trimmedBody = task.body.trim();
+	if (trimmedBody) noteParts.push(trimmedBody);
+	noteParts.push(obsidianUrl);
+
+	const payload: Record<string, unknown> = {
+		title: task.title,
+		note: noteParts.join("\n\n"),
+	};
+	if (project) payload.project = project;
+	if (tags.length > 0) payload.tags = tags;
+	if (task.fields.due) payload.due = task.fields.due;
+	if (task.fields.defer) payload.defer = task.fields.defer;
+	if (task.fields.planned) payload.planned = task.fields.planned;
+	if (task.fields.flag) payload.flag = true;
+	if (task.fields.estimate !== undefined) payload.estimate = task.fields.estimate;
+	if (task.fields.repeat) payload.repeat = task.fields.repeat;
+
+	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(
+		PLUGIN_BOOTSTRAP_SCRIPT
+	)}&arg=${encodeURIComponent(JSON.stringify(payload))}`;
+}
+
 function buildOmniJsScript(opts: BuildUrlOpts): string {
 	const { task, tags, project, obsidianUrl } = opts;
 
