@@ -86,16 +86,16 @@ Three modes are available in settings. The default (URL scheme) works everywhere
 
 The plug-in mode ships a small companion plug-in that lives inside OmniFocus. Approval is keyed to a fixed bootstrap script, so you approve it once and subsequent sends run silently.
 
+> **Requires OmniFocus Pro.** Omni Automation (plug-ins and external scripts) is a Pro-only feature. The default URL-scheme send mode does not require Pro.
+
 **One-time setup:**
 
-1. In OmniFocus → **Settings → General → Automation**, enable external script execution if it isn't already.
-2. Copy `omnifocus-plugin/Obsidian to OmniFocus.omnifocusjs` (the entire folder) into your OmniFocus plug-ins folder. The easiest way:
-   - In OmniFocus, **Automation → Plug-Ins…** and click **Reveal Plug-Ins Folder** to open it in Finder.
-   - Drop the `.omnifocusjs` folder there. (If you use the iCloud-synced folder, the plug-in is available on iOS too — though plug-in send mode itself is macOS-only.)
-3. Switch the plugin's **Send mode** setting to **OmniFocus plug-in**.
-4. Send a task with a `planned::` or `repeat::` field. OmniFocus will show its security prompt for the bootstrap script. Scroll to the bottom and click **Approve**. Future sends do not prompt.
+1. **Enable external scripts.** In OmniFocus, choose **Automation → Configure…** from the menu bar and turn on **Accept scripts from external applications**.
+2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop the entire `omnifocus-plugin/Obsidian to OmniFocus.omnifocusjs` folder from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
+3. **Switch send mode.** In the Obsidian plugin's settings, set **Send mode** to **OmniFocus plug-in**.
+4. **Approve once.** Send a task with a `planned::` or `repeat::` field. OmniFocus shows its security prompt for the bootstrap script — scroll to the bottom and click **Approve**. Future sends with planned/repeat run silently.
 
-If you ever change the bootstrap script (plug-in updates), OmniFocus will prompt for re-approval the next time it runs.
+If a future plugin update changes the bootstrap script, OmniFocus will prompt for re-approval the next time it runs.
 
 ## Bad input
 
