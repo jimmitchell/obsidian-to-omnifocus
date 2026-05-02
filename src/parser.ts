@@ -1,8 +1,15 @@
 export interface TaskFields {
 	due?: string;
 	defer?: string;
+	planned?: string;
 	flag?: boolean;
 	estimate?: number;
+	repeat?: RepeatRule;
+}
+
+export interface RepeatRule {
+	rule: string;
+	method: "DueDate" | "Fixed" | "Start" | "Completion";
 }
 
 export interface SkippedField {
@@ -139,6 +146,22 @@ function parseTaskLine(text: string): ParsedLine {
 				else skippedFields.push({ key: rawKey, value, reason: "invalid date" });
 				return "";
 			}
+			case "planned":
+			case "planneddate":
+			case "plandate": {
+				const d = parseDate(value);
+				if (d) fields.planned = d;
+				else skippedFields.push({ key: rawKey, value, reason: "invalid date" });
+				return "";
+			}
+			case "repeat":
+			case "repeats":
+			case "repetition": {
+				const r = parseRepeatRule(value);
+				if (r) fields.repeat = r;
+				else skippedFields.push({ key: rawKey, value, reason: "invalid repeat rule" });
+				return "";
+			}
 			case "flag":
 			case "flagged": {
 				fields.flag = isTruthy(value);
@@ -201,4 +224,46 @@ function parseEstimate(s: string): number | null {
 function isTruthy(s: string): boolean {
 	const t = s.trim().toLowerCase();
 	return t === "true" || t === "yes" || t === "1" || t === "y";
+}
+
+const FREQ_BY_UNIT: Record<string, string> = {
+	day: "DAILY",
+	days: "DAILY",
+	week: "WEEKLY",
+	weeks: "WEEKLY",
+	month: "MONTHLY",
+	months: "MONTHLY",
+	year: "YEARLY",
+	years: "YEARLY",
+};
+
+function parseRepeatRule(s: string): RepeatRule | null {
+	const trimmed = s.trim();
+	if (!trimmed) return null;
+	const lower = trimmed.toLowerCase();
+
+	switch (lower) {
+		case "daily":
+			return { rule: "FREQ=DAILY", method: "DueDate" };
+		case "weekly":
+			return { rule: "FREQ=WEEKLY", method: "DueDate" };
+		case "monthly":
+			return { rule: "FREQ=MONTHLY", method: "DueDate" };
+		case "yearly":
+		case "annually":
+			return { rule: "FREQ=YEARLY", method: "DueDate" };
+	}
+
+	const everyMatch = lower.match(/^every\s+(\d+)\s+(day|days|week|weeks|month|months|year|years)$/);
+	if (everyMatch) {
+		const n = parseInt(everyMatch[1], 10);
+		const freq = FREQ_BY_UNIT[everyMatch[2]];
+		if (n >= 1 && freq) return { rule: `FREQ=${freq};INTERVAL=${n}`, method: "DueDate" };
+	}
+
+	if (/^FREQ=[A-Z]+/i.test(trimmed)) {
+		return { rule: trimmed, method: "DueDate" };
+	}
+
+	return null;
 }

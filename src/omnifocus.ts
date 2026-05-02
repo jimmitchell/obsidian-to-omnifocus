@@ -32,6 +32,59 @@ export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
 	return `omnifocus:///add?${encodeQuery(params)}`;
 }
 
+export function buildOmniAutomationUrl(opts: BuildUrlOpts): string {
+	const script = buildOmniJsScript(opts);
+	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(script)}`;
+}
+
+function buildOmniJsScript(opts: BuildUrlOpts): string {
+	const { task, tags, project, obsidianUrl } = opts;
+
+	const noteParts: string[] = [];
+	const trimmedBody = task.body.trim();
+	if (trimmedBody) noteParts.push(trimmedBody);
+	noteParts.push(obsidianUrl);
+	const note = noteParts.join("\n\n");
+
+	const lines: string[] = [];
+	lines.push(`const t = new Task(${JSON.stringify(task.title)});`);
+	lines.push(`t.note = ${JSON.stringify(note)};`);
+	if (task.fields.due) {
+		lines.push(`t.dueDate = new Date(${JSON.stringify(task.fields.due)});`);
+	}
+	if (task.fields.defer) {
+		lines.push(`t.deferDate = new Date(${JSON.stringify(task.fields.defer)});`);
+	}
+	if (task.fields.planned) {
+		lines.push(
+			`if ("plannedDate" in t) t.plannedDate = new Date(${JSON.stringify(task.fields.planned)});`
+		);
+	}
+	if (task.fields.flag) {
+		lines.push(`t.flagged = true;`);
+	}
+	if (task.fields.estimate !== undefined) {
+		lines.push(`t.estimatedMinutes = ${task.fields.estimate};`);
+	}
+	if (tags.length > 0) {
+		lines.push(`for (const name of ${JSON.stringify(tags)}) {`);
+		lines.push(`  let tag = flattenedTags.byName(name);`);
+		lines.push(`  if (!tag) tag = new Tag(name);`);
+		lines.push(`  t.addTag(tag);`);
+		lines.push(`}`);
+	}
+	if (project) {
+		lines.push(`{ const p = flattenedProjects.byName(${JSON.stringify(project)}); if (p) moveTasks([t], p); }`);
+	}
+	if (task.fields.repeat) {
+		lines.push(
+			`t.repetitionRule = new Task.RepetitionRule(${JSON.stringify(task.fields.repeat.rule)}, Task.RepetitionMethod[${JSON.stringify(task.fields.repeat.method)}]);`
+		);
+	}
+
+	return `(() => {\n${lines.join("\n")}\n})()`;
+}
+
 export function buildObsidianUrl(vaultName: string, filePath: string): string {
 	return `obsidian://open?${encodeQuery([
 		["vault", vaultName],

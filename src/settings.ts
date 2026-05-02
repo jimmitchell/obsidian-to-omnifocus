@@ -1,6 +1,8 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type ObsidianToOmnifocusPlugin from "./main";
 
+export type SendMode = "url" | "omnijs";
+
 export interface PluginSettings {
 	defaultTags: string;
 	defaultProject: string;
@@ -8,6 +10,7 @@ export interface PluginSettings {
 	projectFrontmatterKey: string;
 	appendInlineTagsAsOmnifocusTags: boolean;
 	skipQuickEntry: boolean;
+	sendMode: SendMode;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -17,6 +20,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	projectFrontmatterKey: "omnifocus_project",
 	appendInlineTagsAsOmnifocusTags: false,
 	skipQuickEntry: false,
+	sendMode: "url",
 };
 
 export class SettingsTab extends PluginSettingTab {
@@ -92,9 +96,25 @@ export class SettingsTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Send mode")
+			.setDesc(
+				"URL scheme works everywhere. OmniAutomation unlocks plannedDate and repeats but is macOS-only — iOS falls back to URL scheme automatically."
+			)
+			.addDropdown((dd) =>
+				dd
+					.addOption("url", "URL scheme (omnifocus:///add)")
+					.addOption("omnijs", "OmniAutomation (macOS only)")
+					.setValue(this.plugin.settings.sendMode)
+					.onChange(async (value) => {
+						this.plugin.settings.sendMode = value as SendMode;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Skip OmniFocus Quick Entry")
 			.setDesc(
-				"Save tasks straight to their destination instead of opening the Quick Entry window for each one."
+				"Save tasks straight to their destination instead of opening the Quick Entry window for each one. No effect in OmniAutomation mode (Quick Entry is never opened there)."
 			)
 			.addToggle((toggle) =>
 				toggle
