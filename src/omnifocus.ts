@@ -50,14 +50,14 @@ function buildOmniJsScript(opts: BuildUrlOpts): string {
 	lines.push(`const t = new Task(${JSON.stringify(task.title)});`);
 	lines.push(`t.note = ${JSON.stringify(note)};`);
 	if (task.fields.due) {
-		lines.push(`t.dueDate = new Date(${JSON.stringify(task.fields.due)});`);
+		lines.push(`t.dueDate = ${localDateExpr(task.fields.due)};`);
 	}
 	if (task.fields.defer) {
-		lines.push(`t.deferDate = new Date(${JSON.stringify(task.fields.defer)});`);
+		lines.push(`t.deferDate = ${localDateExpr(task.fields.defer)};`);
 	}
 	if (task.fields.planned) {
 		lines.push(
-			`if ("plannedDate" in t) t.plannedDate = new Date(${JSON.stringify(task.fields.planned)});`
+			`if ("plannedDate" in t) t.plannedDate = ${localDateExpr(task.fields.planned)};`
 		);
 	}
 	if (task.fields.flag) {
@@ -96,4 +96,13 @@ function encodeQuery(params: [string, string][]): string {
 	return params
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join("&");
+}
+
+function localDateExpr(s: string): string {
+	const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+	if (!m) return `new Date(${JSON.stringify(s)})`;
+	const [, y, mo, d, h, mi, se] = m;
+	const args = [y, String(parseInt(mo, 10) - 1), d];
+	if (h !== undefined) args.push(h, mi, se ?? "0");
+	return `new Date(${args.join(", ")})`;
 }
