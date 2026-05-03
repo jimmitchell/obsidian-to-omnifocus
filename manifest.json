@@ -6,5 +6,6 @@
 	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox, then mark them complete in Obsidian.",
 	"author": "Jim Mitchell",
 	"authorUrl": "https://github.com/jimmitchell",
+	"fundingUrl": "https://buymeacoffee.com/jim.mitchell",
 	"isDesktopOnly": false
 }

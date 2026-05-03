@@ -139,5 +139,17 @@ export class SettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+
+		new Setting(containerEl)
+			.setName("Support development")
+			.setDesc("If this plugin is useful to you, you can buy me a coffee. Thanks!")
+			.addButton((button) =>
+				button
+					.setButtonText("Buy me a coffee")
+					.setCta()
+					.onClick(() => {
+						window.open("https://buymeacoffee.com/jim.mitchell");
+					})
+			);
 	}
 }
