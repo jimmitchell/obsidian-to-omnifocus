@@ -8,7 +8,7 @@ import {
 } from "./omnifocus";
 import { DEFAULT_SETTINGS, type PluginSettings, SettingsTab } from "./settings";
 
-export default class ObsidianToOmnifocusPlugin extends Plugin {
+export default class TasksToOmnifocusPlugin extends Plugin {
 	settings: PluginSettings = DEFAULT_SETTINGS;
 
 	async onload() {

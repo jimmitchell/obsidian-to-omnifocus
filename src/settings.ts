@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type ObsidianToOmnifocusPlugin from "./main";
+import type TasksToOmnifocusPlugin from "./main";
 
 export type SendMode = "url" | "omnijs" | "plugin";
 
@@ -24,9 +24,9 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 };
 
 export class SettingsTab extends PluginSettingTab {
-	plugin: ObsidianToOmnifocusPlugin;
+	plugin: TasksToOmnifocusPlugin;
 
-	constructor(app: App, plugin: ObsidianToOmnifocusPlugin) {
+	constructor(app: App, plugin: TasksToOmnifocusPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

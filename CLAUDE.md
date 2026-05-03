@@ -15,7 +15,7 @@ Four source files, each with a single responsibility:
 - [src/omnifocus.ts](src/omnifocus.ts) — pure URL builders. `buildOmnifocusUrl` produces the `omnifocus:///add?…` x-callback URL; `buildObsidianUrl` produces an `obsidian://open?…` link embedded in task notes.
 - [src/settings.ts](src/settings.ts) — `PluginSettings` interface, defaults, and the settings tab UI.
 
-[manifest.json](manifest.json) declares the plugin id (`obsidian-to-omnifocus`), `minAppVersion: 1.5.0`, and `isDesktopOnly: false` (the plugin works on iOS via the URL scheme).
+[manifest.json](manifest.json) declares the plugin id (`tasks-to-omnifocus`), `minAppVersion: 1.5.0`, and `isDesktopOnly: false` (the plugin works on iOS via the URL scheme).
 
 ## Send pipeline
 

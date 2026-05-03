@@ -1,4 +1,4 @@
-# Obsidian to OmniFocus
+# Tasks to OmniFocus
 
 Send uncompleted tasks from the active Obsidian note to your [OmniFocus](https://www.omnigroup.com/omnifocus) inbox, then mark them complete in Obsidian.
 
@@ -91,7 +91,7 @@ The plug-in mode ships a small companion plug-in that lives inside OmniFocus. Ap
 **One-time setup:**
 
 1. **Enable external scripts.** In OmniFocus, choose **Automation → Configure…** from the menu bar and turn on **Accept scripts from external applications**.
-2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop `omnifocus-plugin/obsidian-to-omnifocus.omnifocusjs` from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
+2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop `omnifocus-plugin/tasks-to-omnifocus.omnifocusjs` from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
 3. **Switch send mode.** In the Obsidian plugin's settings, set **Send mode** to **OmniFocus plug-in**.
 4. **Approve once.** Send a task with a `planned::` or `repeat::` field. OmniFocus shows its security prompt for the bootstrap script — scroll to the bottom and click **Approve**. Future sends with planned/repeat run silently.
 
@@ -105,14 +105,20 @@ If a Dataview field on a task can't be parsed (for example, `[due:: tomorrow]` i
 
 This plugin is not (yet) in the Obsidian Community Plugins directory, so install it manually using one of the methods below.
 
+> **Upgrading from 0.2.x?** This release renames the plugin from `obsidian-to-omnifocus` to `tasks-to-omnifocus`. Obsidian treats it as a new plugin, so:
+>
+> 1. Disable the old plugin in **Settings → Community plugins** and remove `<vault>/.obsidian/plugins/obsidian-to-omnifocus/`.
+> 2. Follow the install steps below to set up `tasks-to-omnifocus`.
+> 3. If you use the OmniFocus plug-in send mode, replace `obsidian-to-omnifocus.omnifocusjs` in your OmniFocus plug-ins folder with the new `tasks-to-omnifocus.omnifocusjs` and re-approve it on first send.
+
 ### Sideload from source (recommended for now)
 
 This builds the plugin from the latest commit on `main` and symlinks it into your vault, so a `git pull` + `npm run build` is all it takes to update.
 
 ```bash
 # 1. Clone the repo wherever you keep code
-git clone https://github.com/jimmitchell/obsidian-to-omnifocus.git
-cd obsidian-to-omnifocus
+git clone https://github.com/jimmitchell/tasks-to-omnifocus.git
+cd tasks-to-omnifocus
 
 # 2. Install deps and build
 npm install
@@ -120,28 +126,28 @@ npm run build
 
 # 3. Symlink into your vault's plugins folder
 #    Replace the path with your actual vault path.
-ln -s "$(pwd)" "/path/to/YourVault/.obsidian/plugins/obsidian-to-omnifocus"
+ln -s "$(pwd)" "/path/to/YourVault/.obsidian/plugins/tasks-to-omnifocus"
 ```
 
 Then in Obsidian:
 
 1. **Settings → Community plugins** — if it says "Community plugins are currently off", click **Turn on community plugins**.
 2. Scroll down to **Installed plugins** (below the "Browse" button); the refresh icon there forces a rescan if needed.
-3. Toggle **Obsidian to OmniFocus** on.
+3. Toggle **Tasks to OmniFocus** on.
 
 To update later: `git pull && npm run build`, then in Obsidian disable and re-enable the plugin (or run "Reload app without saving" from the command palette).
 
 ### Manual install from a release
 
-Once tagged releases are available on the [Releases](https://github.com/jimmitchell/obsidian-to-omnifocus/releases) page:
+Once tagged releases are available on the [Releases](https://github.com/jimmitchell/tasks-to-omnifocus/releases) page:
 
 1. Download `main.js`, `manifest.json`, and `versions.json` from the release.
-2. Create the folder `<vault>/.obsidian/plugins/obsidian-to-omnifocus/` and drop the three files inside.
+2. Create the folder `<vault>/.obsidian/plugins/tasks-to-omnifocus/` and drop the three files inside.
 3. Enable the plugin in Settings → Community plugins → Installed plugins.
 
 ### Troubleshooting
 
-- **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/obsidian-to-omnifocus/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
+- **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/tasks-to-omnifocus/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
 - **Toggle is on but the command does nothing** — open **View → Toggle Developer Tools → Console** and look for a load error.
 - **Tasks arrive in OmniFocus with `+` instead of spaces** — make sure you're on a build from commit `cbcaea4` or later (`npm run build` after pulling).
 
