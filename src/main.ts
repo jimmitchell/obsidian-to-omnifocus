@@ -22,6 +22,36 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 			},
 		});
 
+		this.addCommand({
+			id: "send-task-at-cursor-to-omnifocus",
+			name: "Send task at cursor to OmniFocus",
+			editorCallback: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
+				this.sendTasks(editor, ctx, { scope: "cursor" });
+			},
+		});
+
+		this.addCommand({
+			id: "send-selected-tasks-to-omnifocus",
+			name: "Send selected tasks to OmniFocus",
+			editorCallback: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
+				this.sendTasks(editor, ctx, { scope: "selection" });
+			},
+		});
+
+		this.addCommand({
+			id: "mark-all-tasks-complete",
+			name: "Mark all tasks complete (without sending)",
+			editorCallback: (editor: Editor) => {
+				const tasks = parseUncompletedTasks(editor.getValue());
+				if (tasks.length === 0) {
+					new Notice("No uncompleted tasks in this note.");
+					return;
+				}
+				this.markTasksComplete(editor, tasks);
+				new Notice(`Marked ${tasks.length} task${tasks.length === 1 ? "" : "s"} complete.`);
+			},
+		});
+
 		this.addSettingTab(new SettingsTab(this.app, this));
 	}
 
@@ -33,16 +63,28 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private sendTasks(editor: Editor, ctx: MarkdownView | MarkdownFileInfo): void {
+	private sendTasks(
+		editor: Editor,
+		ctx: MarkdownView | MarkdownFileInfo,
+		opts: { scope?: "all" | "cursor" | "selection" } = {}
+	): void {
 		const file = ctx.file;
 		if (!file) {
 			new Notice("No active file.");
 			return;
 		}
 
-		const tasks = parseUncompletedTasks(editor.getValue());
+		const scope = opts.scope ?? "all";
+		const allTasks = parseUncompletedTasks(editor.getValue());
+		const tasks = filterTasksByScope(allTasks, editor, scope);
 		if (tasks.length === 0) {
-			new Notice("No uncompleted tasks in this note.");
+			const emptyMsg =
+				scope === "cursor"
+					? "No uncompleted task at the cursor."
+					: scope === "selection"
+						? "No uncompleted tasks in the selection."
+						: "No uncompleted tasks in this note.";
+			new Notice(emptyMsg);
 			return;
 		}
 
@@ -150,4 +192,21 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 
 function dedupe<T>(arr: T[]): T[] {
 	return Array.from(new Set(arr));
+}
+
+function filterTasksByScope(
+	tasks: ParsedTask[],
+	editor: Editor,
+	scope: "all" | "cursor" | "selection"
+): ParsedTask[] {
+	if (scope === "all") return tasks;
+	if (scope === "cursor") {
+		const line = editor.getCursor().line;
+		return tasks.filter((t) => t.checkboxLines.includes(line));
+	}
+	const from = editor.getCursor("from").line;
+	const to = editor.getCursor("to").line;
+	const lo = Math.min(from, to);
+	const hi = Math.max(from, to);
+	return tasks.filter((t) => t.checkboxLines.some((l) => l >= lo && l <= hi));
 }

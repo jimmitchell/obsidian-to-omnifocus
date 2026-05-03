@@ -6,7 +6,11 @@ Each task forwarded to OmniFocus includes a link back to its source note in Obsi
 
 ## Features
 
-- One command — **Send uncompleted tasks to OmniFocus** — scans the active note and forwards every `- [ ]` to OmniFocus.
+- Four commands for different inbox-zero workflows:
+  - **Send uncompleted tasks to OmniFocus** — scans the active note and forwards every `- [ ]` to OmniFocus.
+  - **Send task at cursor to OmniFocus** — sends just the task containing the cursor.
+  - **Send selected tasks to OmniFocus** — sends only the tasks within the editor selection.
+  - **Mark all tasks complete (without sending)** — checks off every `- [ ]` in the note without forwarding to OmniFocus.
 - Nested checkboxes are folded into the parent task's note body, preserving the structure you wrote in Obsidian.
 - Inline Dataview-style fields on the task line are mapped to OmniFocus fields:
   - `[due:: 2026-05-10]` → due date (also accepts natural language like `today 1pm`, `tomorrow 9am`, `fri 3pm`, `next monday`, `in 3 days`)
