@@ -7,7 +7,7 @@
 		"target": "ES2018",
 		"allowJs": true,
 		"noImplicitAny": true,
-		"moduleResolution": "Node",
+		"moduleResolution": "Bundler",
 		"importHelpers": true,
 		"isolatedModules": true,
 		"strictNullChecks": true,

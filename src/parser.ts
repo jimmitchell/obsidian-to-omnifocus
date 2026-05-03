@@ -1,3 +1,5 @@
+import { casual } from "chrono-node/en";
+
 export interface TaskFields {
 	due?: string;
 	defer?: string;
@@ -197,10 +199,23 @@ function parseTaskLine(text: string): ParsedLine {
 function parseDate(s: string): string | null {
 	const dateOnly = /^\d{4}-\d{2}-\d{2}$/;
 	const dateTime = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?$/;
-	if (!dateOnly.test(s) && !dateTime.test(s)) return null;
-	const d = new Date(s.replace(" ", "T"));
+	if (dateOnly.test(s) || dateTime.test(s)) {
+		const d = new Date(s.replace(" ", "T"));
+		if (!isNaN(d.getTime())) return s.replace("T", " ");
+	}
+
+	const results = casual.parse(s, new Date(), { forwardDate: true });
+	if (results.length === 0) return null;
+	const start = results[0].start;
+	const d = start.date();
 	if (isNaN(d.getTime())) return null;
-	return s.replace("T", " ");
+	const date = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+	if (!start.isCertain("hour")) return date;
+	return `${date} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function pad2(n: number): string {
+	return n < 10 ? `0${n}` : `${n}`;
 }
 
 function parseEstimate(s: string): number | null {

@@ -9,8 +9,8 @@ Each task forwarded to OmniFocus includes a link back to its source note in Obsi
 - One command — **Send uncompleted tasks to OmniFocus** — scans the active note and forwards every `- [ ]` to OmniFocus.
 - Nested checkboxes are folded into the parent task's note body, preserving the structure you wrote in Obsidian.
 - Inline Dataview-style fields on the task line are mapped to OmniFocus fields:
-  - `[due:: 2026-05-10]` → due date
-  - `[defer:: 2026-05-05]` (or `start::` / `scheduled::`) → defer date
+  - `[due:: 2026-05-10]` → due date (also accepts natural language like `today 1pm`, `tomorrow 9am`, `fri 3pm`, `next monday`, `in 3 days`)
+  - `[defer:: 2026-05-05]` (or `start::` / `scheduled::`) → defer date (same natural-language phrases supported)
   - `[flag:: true]` (or a 🚩 on the line) → flag
   - `[estimate:: 30m]` (or `1h`, `1h30m`, `90`) → time estimate in minutes
 - Tag configuration:
@@ -99,7 +99,7 @@ If a future plugin update changes the bootstrap script, OmniFocus will prompt fo
 
 ## Bad input
 
-If a Dataview field on a task can't be parsed (for example, `[due:: tomorrow]` instead of an ISO date), the field is dropped and the task is sent without it. A Notice lists what was skipped so you can fix it.
+If a Dataview field on a task can't be parsed (for example, `[due:: sometime soon]`), the field is dropped and the task is sent without it. A Notice lists what was skipped so you can fix it.
 
 ## Installation
 
