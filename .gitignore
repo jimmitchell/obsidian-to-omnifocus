@@ -6,3 +6,12 @@ data.json
 .vscode/
 .idea/
 .claude/
+
+# Build / packaging artifacts
+*.zip
+build/
+dist/
+
+# Local env / secrets
+.env
+.env.*

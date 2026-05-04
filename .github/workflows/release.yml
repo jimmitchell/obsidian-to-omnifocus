@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,17 +23,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+
+      - name: Verify tag matches manifest.json version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          MANIFEST_VERSION=$(node -p "require('./manifest.json').version")
+          if [ "$TAG" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag '$TAG' does not match manifest.json version '$MANIFEST_VERSION'."
+            echo "Obsidian's community-plugins bot requires the release tag to match manifest.json exactly."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build plugin
-        run: |
-          npm install
-          npm run build
+        run: npm run build
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
           draft: true
+          generate_release_notes: true
           files: |
             main.js
             manifest.json
-            versions.json
