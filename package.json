@@ -1,6 +1,6 @@
 {
 	"name": "tasks-to-omnifocus",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox.",
 	"main": "main.js",
 	"scripts": {

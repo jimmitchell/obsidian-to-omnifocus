@@ -32,17 +32,54 @@ export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
 	return `omnifocus:///add?${encodeQuery(params)}`;
 }
 
-export function buildOmniAutomationUrl(opts: BuildUrlOpts): string {
-	const script = buildOmniJsScript(opts);
-	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(script)}`;
-}
-
 export const PLUGIN_BOOTSTRAP_SCRIPT =
 	`(function(a){globalThis.__t2of_payload=a;PlugIn.find("org.jimmitchell.tasks-to-omnifocus").actions[0].perform();})(argument)`;
 
-export function buildPluginInvocationUrl(opts: BuildUrlOpts): string {
-	const { task, tags, project, obsidianUrl } = opts;
+export interface TaskTreeNode {
+	task: ParsedTask;
+	tags: string[];
+	children: TaskTreeNode[];
+}
 
+export interface BuildTreeOpts {
+	root: TaskTreeNode;
+	project: string;
+	obsidianUrl: string;
+}
+
+export function buildOmniAutomationUrlTree(opts: BuildTreeOpts): string {
+	const { root, project, obsidianUrl } = opts;
+	const lines: string[] = [];
+	let counter = 0;
+
+	function emit(node: TaskTreeNode, parentVar: string | null): string {
+		const v = `t${counter++}`;
+		emitTaskLines(lines, v, node.task, node.tags, obsidianUrl, parentVar);
+		for (const child of node.children) emit(child, v);
+		return v;
+	}
+
+	const rootVar = emit(root, null);
+	if (project) {
+		lines.push(
+			`{ const p = flattenedProjects.byName(${JSON.stringify(project)}); if (p) moveTasks([${rootVar}], p); }`
+		);
+	}
+	const script = `(() => {\n${lines.join("\n")}\n})()`;
+	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(script)}`;
+}
+
+export function buildPluginInvocationUrlTree(opts: BuildTreeOpts): string {
+	const { root, project, obsidianUrl } = opts;
+	const payload = nodeToPayload(root, obsidianUrl);
+	if (project) payload.project = project;
+	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(
+		PLUGIN_BOOTSTRAP_SCRIPT
+	)}&arg=${encodeURIComponent(JSON.stringify(payload))}`;
+}
+
+function nodeToPayload(node: TaskTreeNode, obsidianUrl: string): Record<string, unknown> {
+	const { task, tags } = node;
 	const noteParts: string[] = [];
 	const trimmedBody = task.body.trim();
 	if (trimmedBody) noteParts.push(trimmedBody);
@@ -52,7 +89,6 @@ export function buildPluginInvocationUrl(opts: BuildUrlOpts): string {
 		title: task.title,
 		note: noteParts.join("\n\n"),
 	};
-	if (project) payload.project = project;
 	if (tags.length > 0) payload.tags = tags;
 	if (task.fields.due) payload.due = task.fields.due;
 	if (task.fields.defer) payload.defer = task.fields.defer;
@@ -60,58 +96,60 @@ export function buildPluginInvocationUrl(opts: BuildUrlOpts): string {
 	if (task.fields.flag) payload.flag = true;
 	if (task.fields.estimate !== undefined) payload.estimate = task.fields.estimate;
 	if (task.fields.repeat) payload.repeat = task.fields.repeat;
-
-	return `omnifocus://x-callback-url/omnijs-run?script=${encodeURIComponent(
-		PLUGIN_BOOTSTRAP_SCRIPT
-	)}&arg=${encodeURIComponent(JSON.stringify(payload))}`;
+	if (node.children.length > 0) {
+		payload.children = node.children.map((c) => nodeToPayload(c, obsidianUrl));
+	}
+	return payload;
 }
 
-function buildOmniJsScript(opts: BuildUrlOpts): string {
-	const { task, tags, project, obsidianUrl } = opts;
-
+function emitTaskLines(
+	lines: string[],
+	varName: string,
+	task: ParsedTask,
+	tags: string[],
+	obsidianUrl: string,
+	parentVar: string | null
+): void {
 	const noteParts: string[] = [];
 	const trimmedBody = task.body.trim();
 	if (trimmedBody) noteParts.push(trimmedBody);
 	noteParts.push(obsidianUrl);
 	const note = noteParts.join("\n\n");
 
-	const lines: string[] = [];
-	lines.push(`const t = new Task(${JSON.stringify(task.title)});`);
-	lines.push(`t.note = ${JSON.stringify(note)};`);
+	const ctorArgs = parentVar
+		? `${JSON.stringify(task.title)}, ${parentVar}`
+		: `${JSON.stringify(task.title)}`;
+	lines.push(`const ${varName} = new Task(${ctorArgs});`);
+	lines.push(`${varName}.note = ${JSON.stringify(note)};`);
 	if (task.fields.due) {
-		lines.push(`t.dueDate = ${localDateExpr(task.fields.due)};`);
+		lines.push(`${varName}.dueDate = ${localDateExpr(task.fields.due)};`);
 	}
 	if (task.fields.defer) {
-		lines.push(`t.deferDate = ${localDateExpr(task.fields.defer)};`);
+		lines.push(`${varName}.deferDate = ${localDateExpr(task.fields.defer)};`);
 	}
 	if (task.fields.planned) {
 		lines.push(
-			`if ("plannedDate" in t) t.plannedDate = ${localDateExpr(task.fields.planned)};`
+			`if ("plannedDate" in ${varName}) ${varName}.plannedDate = ${localDateExpr(task.fields.planned)};`
 		);
 	}
 	if (task.fields.flag) {
-		lines.push(`t.flagged = true;`);
+		lines.push(`${varName}.flagged = true;`);
 	}
 	if (task.fields.estimate !== undefined) {
-		lines.push(`t.estimatedMinutes = ${task.fields.estimate};`);
+		lines.push(`${varName}.estimatedMinutes = ${task.fields.estimate};`);
 	}
 	if (tags.length > 0) {
 		lines.push(`for (const name of ${JSON.stringify(tags)}) {`);
 		lines.push(`  let tag = flattenedTags.byName(name);`);
 		lines.push(`  if (!tag) tag = new Tag(name);`);
-		lines.push(`  t.addTag(tag);`);
+		lines.push(`  ${varName}.addTag(tag);`);
 		lines.push(`}`);
-	}
-	if (project) {
-		lines.push(`{ const p = flattenedProjects.byName(${JSON.stringify(project)}); if (p) moveTasks([t], p); }`);
 	}
 	if (task.fields.repeat) {
 		lines.push(
-			`t.repetitionRule = new Task.RepetitionRule(${JSON.stringify(task.fields.repeat.rule)}, Task.RepetitionMethod[${JSON.stringify(task.fields.repeat.method)}]);`
+			`${varName}.repetitionRule = new Task.RepetitionRule(${JSON.stringify(task.fields.repeat.rule)}, Task.RepetitionMethod[${JSON.stringify(task.fields.repeat.method)}]);`
 		);
 	}
-
-	return `(() => {\n${lines.join("\n")}\n})()`;
 }
 
 export function buildObsidianUrl(vaultName: string, filePath: string): string {

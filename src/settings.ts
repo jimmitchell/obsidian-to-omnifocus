@@ -11,6 +11,7 @@ export interface PluginSettings {
 	appendInlineTagsAsOmnifocusTags: boolean;
 	skipQuickEntry: boolean;
 	sendMode: SendMode;
+	preserveHierarchy: boolean;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 	appendInlineTagsAsOmnifocusTags: false,
 	skipQuickEntry: false,
 	sendMode: "url",
+	preserveHierarchy: false,
 };
 
 export class SettingsTab extends PluginSettingTab {
@@ -122,6 +124,20 @@ export class SettingsTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.skipQuickEntry)
 					.onChange(async (value) => {
 						this.plugin.settings.skipQuickEntry = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Preserve task hierarchy")
+			.setDesc(
+				"When on, nested checkboxes become subtasks in OmniFocus instead of being folded into the parent task's note. True subtasks require OmniAutomation or Plug-in send mode (macOS); URL scheme mode falls back to today's body-folding behavior."
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.preserveHierarchy)
+					.onChange(async (value) => {
+						this.plugin.settings.preserveHierarchy = value;
 						await this.plugin.saveSettings();
 					})
 			);

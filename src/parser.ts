@@ -28,15 +28,24 @@ export interface ParsedTask {
 	fields: TaskFields;
 	inlineTags: string[];
 	skippedFields: SkippedField[];
+	parentLineNumber?: number;
+}
+
+export interface ParseOptions {
+	preserveHierarchy?: boolean;
 }
 
 const CHECKBOX_RE = /^(\s*)(?:[-*+]|\d+\.)\s+\[([ xX])\]\s+(.*)$/;
 const DV_FIELD_RE = /\[([a-zA-Z][a-zA-Z0-9_-]*)\s*::\s*([^\]]+)\]/g;
 const INLINE_TAG_RE = /(^|\s)#([\p{L}\p{N}_/-]+)/gu;
 
-export function parseUncompletedTasks(content: string): ParsedTask[] {
+export function parseUncompletedTasks(
+	content: string,
+	opts: ParseOptions = {}
+): ParsedTask[] {
 	const lines = content.split("\n");
 	const tasks: ParsedTask[] = [];
+	const preserveHierarchy = opts.preserveHierarchy === true;
 
 	let i = 0;
 	while (i < lines.length) {
@@ -46,7 +55,7 @@ export function parseUncompletedTasks(content: string): ParsedTask[] {
 			continue;
 		}
 
-		const [, indent, state, rest] = match;
+		const [, indent, state] = match;
 		const taskIndent = indent.length;
 
 		if (state !== " ") {
@@ -54,16 +63,58 @@ export function parseUncompletedTasks(content: string): ParsedTask[] {
 			continue;
 		}
 
-		const checkboxLines = [i];
-		const bodyLines: string[] = [];
-		const bodyEnd = consumeIndentedBlock(lines, i + 1, taskIndent, (lineIdx, line) => {
+		i = parseTaskAt(lines, i, taskIndent, undefined, preserveHierarchy, tasks);
+	}
+
+	return tasks;
+}
+
+function parseTaskAt(
+	lines: string[],
+	startIdx: number,
+	taskIndent: number,
+	parentLineNumber: number | undefined,
+	preserveHierarchy: boolean,
+	tasks: ParsedTask[]
+): number {
+	const match = lines[startIdx].match(CHECKBOX_RE);
+	if (!match) return startIdx + 1;
+	const [, , , rest] = match;
+
+	const checkboxLines = [startIdx];
+	const bodyLines: string[] = [];
+	let end: number;
+
+	if (preserveHierarchy) {
+		const task: ParsedTask = {
+			lineNumber: startIdx,
+			title: "",
+			body: "",
+			checkboxLines,
+			fields: {},
+			inlineTags: [],
+			skippedFields: [],
+			...(parentLineNumber !== undefined ? { parentLineNumber } : {}),
+		};
+		tasks.push(task);
+
+		end = walkHierarchical(lines, startIdx + 1, taskIndent, startIdx, tasks, bodyLines);
+
+		const parsed = parseTaskLine(rest);
+		task.title = parsed.title;
+		task.body = dedentBody(bodyLines);
+		task.fields = parsed.fields;
+		task.inlineTags = parsed.inlineTags;
+		task.skippedFields = parsed.skippedFields;
+	} else {
+		end = consumeIndentedBlock(lines, startIdx + 1, taskIndent, (lineIdx, line) => {
 			bodyLines.push(line);
 			if (CHECKBOX_RE.test(line)) checkboxLines.push(lineIdx);
 		});
 
 		const parsed = parseTaskLine(rest);
 		tasks.push({
-			lineNumber: i,
+			lineNumber: startIdx,
 			title: parsed.title,
 			body: dedentBody(bodyLines),
 			checkboxLines,
@@ -71,11 +122,46 @@ export function parseUncompletedTasks(content: string): ParsedTask[] {
 			inlineTags: parsed.inlineTags,
 			skippedFields: parsed.skippedFields,
 		});
-
-		i = bodyEnd;
 	}
 
-	return tasks;
+	return end;
+}
+
+function walkHierarchical(
+	lines: string[],
+	startIdx: number,
+	parentIndent: number,
+	parentLine: number,
+	tasks: ParsedTask[],
+	bodyLines: string[]
+): number {
+	let j = startIdx;
+	while (j < lines.length) {
+		const line = lines[j];
+		if (line.trim() === "") {
+			let k = j + 1;
+			while (k < lines.length && lines[k].trim() === "") k++;
+			if (k >= lines.length) break;
+			if (leadingIndent(lines[k]) <= parentIndent) break;
+			bodyLines.push(line);
+			j++;
+			continue;
+		}
+		if (leadingIndent(line) <= parentIndent) break;
+		const childMatch = line.match(CHECKBOX_RE);
+		if (childMatch) {
+			const childIndent = childMatch[1].length;
+			if (childMatch[2] === " ") {
+				j = parseTaskAt(lines, j, childIndent, parentLine, true, tasks);
+				continue;
+			}
+			j = consumeIndentedBlock(lines, j + 1, childIndent);
+			continue;
+		}
+		bodyLines.push(line);
+		j++;
+	}
+	return j;
 }
 
 function consumeIndentedBlock(

@@ -4,7 +4,7 @@
 	"targets": ["omnifocus"],
 	"author": "Jim Mitchell",
 	"identifier": "org.jimmitchell.tasks-to-omnifocus",
-	"version": "1.0",
+	"version": "1.1",
 	"description": "Receives task creation requests from the Tasks-to-OmniFocus plugin so they can be approved once instead of on every send.",
 	"label": "Create Task from Obsidian",
 	"shortLabel": "Create Task",
@@ -21,14 +21,10 @@
 		return new Date(y, mo, d, +m[4], +m[5], +(m[6] || 0));
 	}
 
-	const action = new PlugIn.Action(function (selection, sender) {
-		let payload = globalThis.__t2of_payload;
-		if (typeof payload === "string") {
-			try { payload = JSON.parse(payload); } catch (e) { return; }
-		}
-		if (!payload || typeof payload !== "object") return;
-
-		const t = new Task(String(payload.title || ""));
+	function createTask(payload, parent) {
+		const t = parent
+			? new Task(String(payload.title || ""), parent)
+			: new Task(String(payload.title || ""));
 		if (typeof payload.note === "string") t.note = payload.note;
 		if (payload.due) t.dueDate = localDate(payload.due);
 		if (payload.defer) t.deferDate = localDate(payload.defer);
@@ -46,15 +42,29 @@
 				t.addTag(tag);
 			}
 		}
-		if (typeof payload.project === "string" && payload.project) {
-			const p = flattenedProjects.byName(payload.project);
-			if (p) moveTasks([t], p);
-		}
 		if (payload.repeat && payload.repeat.rule && payload.repeat.method) {
 			t.repetitionRule = new Task.RepetitionRule(
 				payload.repeat.rule,
 				Task.RepetitionMethod[payload.repeat.method]
 			);
+		}
+		if (Array.isArray(payload.children)) {
+			for (const child of payload.children) createTask(child, t);
+		}
+		return t;
+	}
+
+	const action = new PlugIn.Action(function (selection, sender) {
+		let payload = globalThis.__t2of_payload;
+		if (typeof payload === "string") {
+			try { payload = JSON.parse(payload); } catch (e) { return; }
+		}
+		if (!payload || typeof payload !== "object") return;
+
+		const root = createTask(payload, null);
+		if (typeof payload.project === "string" && payload.project) {
+			const p = flattenedProjects.byName(payload.project);
+			if (p) moveTasks([root], p);
 		}
 	});
 

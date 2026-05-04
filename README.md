@@ -11,7 +11,7 @@ Each task forwarded to OmniFocus includes a link back to its source note in Obsi
   - **Send task at cursor to OmniFocus** — sends just the task containing the cursor.
   - **Send selected tasks to OmniFocus** — sends only the tasks within the editor selection.
   - **Mark all tasks complete (without sending)** — checks off every `- [ ]` in the note without forwarding to OmniFocus.
-- Nested checkboxes are folded into the parent task's note body, preserving the structure you wrote in Obsidian.
+- Nested checkboxes are folded into the parent task's note body, preserving the structure you wrote in Obsidian. Optional **Preserve task hierarchy** setting recreates the nesting as real OmniFocus subtasks (requires OmniAutomation or Plug-in send mode on macOS).
 - Inline Dataview-style fields on the task line are mapped to OmniFocus fields:
   - `[due:: 2026-05-10]` → due date (also accepts natural language like `today 1pm`, `tomorrow 9am`, `fri 3pm`, `next monday`, `in 3 days`)
   - `[defer:: 2026-05-05]` (or `start::` / `scheduled::`) → defer date (same natural-language phrases supported)
@@ -63,7 +63,9 @@ When sent, this becomes an OmniFocus task with title "Email landlord about lease
   Notes: looking at June 12–18
 ```
 
-Sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFocus note body. All four checkboxes in this block are marked complete in Obsidian after the send.
+By default, this sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFocus note body. All four checkboxes in this block are marked complete in Obsidian after the send.
+
+With **Preserve task hierarchy** enabled and a hierarchy-capable send mode (OmniAutomation or Plug-in on macOS), the same markdown produces three OmniFocus tasks: **Plan trip** as the parent with **Book flight** and **Reserve hotel** as real subtasks underneath. The free-text `Notes:` line stays attached to the parent's note. In URL scheme mode, hierarchy preservation is not possible, so the plugin falls back to the body-folding behavior and shows a Notice explaining why.
 
 ## Settings
 
@@ -75,6 +77,7 @@ Sends a single OmniFocus task **Plan trip** with the nested lines as the OmniFoc
 | Project frontmatter key | `omnifocus_project` | YAML key on a note that overrides the default project. |
 | Forward inline `#tags` | off | When on, `#tags` written on a task line are appended to the OmniFocus tag list. |
 | Skip OmniFocus Quick Entry | off | When on, tasks are saved straight to their destination via `autosave=true` instead of opening the Quick Entry window. |
+| Preserve task hierarchy | off | When on, nested checkboxes become real OmniFocus subtasks (in OmniAutomation or Plug-in send mode). URL scheme mode falls back to today's body-folding with a Notice. |
 
 ## Send modes
 
@@ -114,6 +117,8 @@ This plugin is not (yet) in the Obsidian Community Plugins directory, so install
 > 1. Disable the old plugin in **Settings → Community plugins** and remove `<vault>/.obsidian/plugins/obsidian-to-omnifocus/`.
 > 2. Follow the install steps below to set up `tasks-to-omnifocus`.
 > 3. If you use the OmniFocus plug-in send mode, replace `obsidian-to-omnifocus.omnifocusjs` in your OmniFocus plug-ins folder with the new `tasks-to-omnifocus.omnifocusjs` and re-approve it on first send.
+>
+> **Upgrading to 0.6.x with plug-in send mode?** Drop the new `tasks-to-omnifocus.omnifocusjs` (version 1.1) into your OmniFocus plug-ins folder, replacing the older copy. The bootstrap script is unchanged, so no re-approval is needed; the new bundle adds support for nested subtasks when **Preserve task hierarchy** is enabled.
 
 ### Sideload from source (recommended for now)
 
