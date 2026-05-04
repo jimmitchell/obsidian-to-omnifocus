@@ -8,4 +8,4 @@
 - [ ] **Smart templates** — Save task templates with pre-filled tags, projects, estimates, and other metadata. Users could quickly apply templates to new tasks.
 - [x] **Preserve task relationships** — Added a "Preserve task hierarchy" setting; when on, nested checkboxes become subtasks in OmniFocus (via OmniAutomation or Plug-in send mode on macOS). URL scheme falls back to today's body-folding behavior with a Notice.
 - [ ] **Metadata preservation** — Keep custom YAML frontmatter fields intact when syncing tasks. Allows users to store additional metadata without data loss.
-- [ ] **Share extension (iOS/iPadOS)** — Add "Send to OmniFocus" to iOS share menu when viewing Obsidian notes. Mobile-focused workflow improvement.
+- [x] ~~**Share extension (iOS/iPadOS)**~~ — Won't do. A "Send to OmniFocus" entry in the iOS share sheet would require a native iOS app target (Swift + Xcode + App Store distribution), which is out of scope for an Obsidian community plugin. Users wanting share-sheet capture should use OmniFocus's built-in Share extension or an Apple Shortcut.
