@@ -144,17 +144,14 @@ To update later: `git pull && npm run build`, then in Obsidian disable and re-en
 
 ### Manual install from a release
 
-Once tagged releases are available on the [Releases](https://github.com/jimmitchell/tasks-to-omnifocus/releases) page:
-
-1. Download `main.js`, `manifest.json`, and `versions.json` from the release.
-2. Create the folder `<vault>/.obsidian/plugins/tasks-to-omnifocus/` and drop the three files inside.
+1. Grab `main.js` and `manifest.json` from the latest [release](https://github.com/jimmitchell/tasks-to-omnifocus/releases).
+2. Create the folder `<vault>/.obsidian/plugins/tasks-to-omnifocus/` and drop both files inside.
 3. Enable the plugin in Settings → Community plugins → Installed plugins.
 
 ### Troubleshooting
 
 - **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/tasks-to-omnifocus/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
 - **Toggle is on but the command does nothing** — open **View → Toggle Developer Tools → Console** and look for a load error.
-- **Tasks arrive in OmniFocus with `+` instead of spaces** — make sure you're on a build from commit `cbcaea4` or later (`npm run build` after pulling).
 
 ## Development
 
