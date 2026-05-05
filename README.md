@@ -110,17 +110,13 @@ If a Dataview field on a task can't be parsed (for example, `[due:: sometime soo
 
 ## Installation
 
-This plugin is not (yet) in the Obsidian Community Plugins directory, so install it manually using one of the methods below.
+### From the Community Plugins directory (recommended)
 
-> **Upgrading from 0.2.x?** This release renames the plugin from `obsidian-to-omnifocus` to `tasks-to-omnifocus`. Obsidian treats it as a new plugin, so:
->
-> 1. Disable the old plugin in **Settings → Community plugins** and remove `<vault>/.obsidian/plugins/obsidian-to-omnifocus/`.
-> 2. Follow the install steps below to set up `tasks-to-omnifocus`.
-> 3. If you use the OmniFocus plug-in send mode, replace `obsidian-to-omnifocus.omnifocusjs` in your OmniFocus plug-ins folder with the new `tasks-to-omnifocus.omnifocusjs` and re-approve it on first send.
->
-> **Upgrading to 0.6.x with plug-in send mode?** Drop the new `tasks-to-omnifocus.omnifocusjs` (version 1.1) into your OmniFocus plug-ins folder, replacing the older copy. The bootstrap script is unchanged, so no re-approval is needed; the new bundle adds support for nested subtasks when **Preserve task hierarchy** is enabled.
+1. In Obsidian, open **Settings → Community plugins**. If community plugins are off, click **Turn on community plugins**.
+2. Click **Browse**, search for **Tasks to OmniFocus**, and click **Install**.
+3. Click **Enable**.
 
-### Sideload from source (recommended for now)
+### Sideload from source
 
 This builds the plugin from the latest commit on `main` and symlinks it into your vault, so a `git pull` + `npm run build` is all it takes to update.
 
