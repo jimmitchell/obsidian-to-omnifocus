@@ -33,7 +33,7 @@ export function buildOmnifocusUrl(opts: BuildUrlOpts): string {
 }
 
 export const PLUGIN_BOOTSTRAP_SCRIPT =
-	`(function(a){globalThis.__t2of_payload=a;PlugIn.find("org.jimmitchell.tasks-to-omnifocus").actions[0].perform();})(argument)`;
+	`(function(a){globalThis.__t2of_payload=a;PlugIn.find("org.jimmitchell.omnifocus-task-sync").actions[0].perform();})(argument)`;
 
 export interface TaskTreeNode {
 	task: ParsedTask;

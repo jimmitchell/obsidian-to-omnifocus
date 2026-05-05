@@ -3,9 +3,9 @@
 	"type": "action",
 	"targets": ["omnifocus"],
 	"author": "Jim Mitchell",
-	"identifier": "org.jimmitchell.tasks-to-omnifocus",
-	"version": "1.1",
-	"description": "Receives task creation requests from the Tasks-to-OmniFocus plugin so they can be approved once instead of on every send.",
+	"identifier": "org.jimmitchell.omnifocus-task-sync",
+	"version": "1.2",
+	"description": "Receives task creation requests from the OmniFocus Task Sync plugin so they can be approved once instead of on every send.",
 	"label": "Create Task from Obsidian",
 	"shortLabel": "Create Task",
 	"paletteLabel": "Create Task"

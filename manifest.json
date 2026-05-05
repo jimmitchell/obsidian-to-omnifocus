@@ -1,9 +1,9 @@
 {
-	"id": "tasks-to-omnifocus",
-	"name": "Tasks to OmniFocus",
-	"version": "0.6.1",
+	"id": "omnifocus-task-sync",
+	"name": "OmniFocus Task Sync",
+	"version": "0.6.2",
 	"minAppVersion": "1.5.0",
-	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox, then mark them complete in Obsidian.",
+	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox, then mark them complete in the editor.",
 	"author": "Jim Mitchell",
 	"authorUrl": "https://github.com/jimmitchell",
 	"fundingUrl": "https://buymeacoffee.com/jim.mitchell",

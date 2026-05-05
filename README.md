@@ -1,4 +1,4 @@
-# Tasks to OmniFocus
+# OmniFocus Task Sync
 
 Send uncompleted tasks from the active Obsidian note to your [OmniFocus](https://www.omnigroup.com/omnifocus) inbox, then mark them complete in Obsidian.
 
@@ -98,7 +98,7 @@ The plug-in mode ships a small companion plug-in that lives inside OmniFocus. Ap
 **One-time setup:**
 
 1. **Enable external scripts.** In OmniFocus, choose **Automation → Configure…** from the menu bar and turn on **Accept scripts from external applications**.
-2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop `omnifocus-plugin/tasks-to-omnifocus.omnifocusjs` from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
+2. **Install the plug-in.** Open the plug-ins folder via **Automation → Plug-Ins…** → **Reveal Plug-Ins Folder**, then drop `omnifocus-plugin/omnifocus-task-sync.omnifocusjs` from this repo into it. (If you use the iCloud-synced folder, the plug-in syncs to other Macs — though the plug-in send mode itself is macOS-only.)
 3. **Switch send mode.** In the Obsidian plugin's settings, set **Send mode** to **OmniFocus plug-in**.
 4. **Approve once.** Send a task with a `planned::` or `repeat::` field. OmniFocus shows its security prompt for the bootstrap script — scroll to the bottom and click **Approve**. Future sends with planned/repeat run silently.
 
@@ -113,7 +113,7 @@ If a Dataview field on a task can't be parsed (for example, `[due:: sometime soo
 ### From the Community Plugins directory (recommended)
 
 1. In Obsidian, open **Settings → Community plugins**. If community plugins are off, click **Turn on community plugins**.
-2. Click **Browse**, search for **Tasks to OmniFocus**, and click **Install**.
+2. Click **Browse**, search for **OmniFocus Task Sync**, and click **Install**.
 3. Click **Enable**.
 
 ### Sideload from source
@@ -131,26 +131,26 @@ npm run build
 
 # 3. Symlink into your vault's plugins folder
 #    Replace the path with your actual vault path.
-ln -s "$(pwd)" "/path/to/YourVault/.obsidian/plugins/tasks-to-omnifocus"
+ln -s "$(pwd)" "/path/to/YourVault/.obsidian/plugins/omnifocus-task-sync"
 ```
 
 Then in Obsidian:
 
 1. **Settings → Community plugins** — if it says "Community plugins are currently off", click **Turn on community plugins**.
 2. Scroll down to **Installed plugins** (below the "Browse" button); the refresh icon there forces a rescan if needed.
-3. Toggle **Tasks to OmniFocus** on.
+3. Toggle **OmniFocus Task Sync** on.
 
 To update later: `git pull && npm run build`, then in Obsidian disable and re-enable the plugin (or run "Reload app without saving" from the command palette).
 
 ### Manual install from a release
 
 1. Grab `main.js` and `manifest.json` from the latest [release](https://github.com/jimmitchell/tasks-to-omnifocus/releases).
-2. Create the folder `<vault>/.obsidian/plugins/tasks-to-omnifocus/` and drop both files inside.
+2. Create the folder `<vault>/.obsidian/plugins/omnifocus-task-sync/` and drop both files inside.
 3. Enable the plugin in Settings → Community plugins → Installed plugins.
 
 ### Troubleshooting
 
-- **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/tasks-to-omnifocus/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
+- **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/omnifocus-task-sync/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
 - **Toggle is on but the command does nothing** — open **View → Toggle Developer Tools → Console** and look for a load error.
 
 ## Development
