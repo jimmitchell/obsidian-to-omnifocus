@@ -148,6 +148,12 @@ To update later: `git pull && npm run build`, then in Obsidian disable and re-en
 2. Create the folder `<vault>/.obsidian/plugins/omnifocus-task-sync/` and drop both files inside.
 3. Enable the plugin in Settings → Community plugins → Installed plugins.
 
+Release builds carry a [GitHub artifact attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-to-establish-provenance-for-builds). To confirm `main.js` was built from this repository before installing it:
+
+```bash
+gh attestation verify main.js --repo jimmitchell/tasks-to-omnifocus
+```
+
 ### Troubleshooting
 
 - **Plugin doesn't appear in Installed plugins** — confirm `<vault>/.obsidian/plugins/omnifocus-task-sync/manifest.json` exists (follow the symlink with `ls -la`), then quit and relaunch Obsidian (⌘Q on macOS — closing the window isn't enough).
@@ -162,6 +168,8 @@ npm run build  # type-check + production build
 ```
 
 If you sideloaded via the symlink above, `npm run dev` will keep `main.js` fresh; just disable + re-enable the plugin in Obsidian to load the new build.
+
+Releases are cut by bumping the version (`npm version <x.y.z> --no-git-tag-version`), updating [CHANGELOG.md](CHANGELOG.md), and pushing a git tag that matches `manifest.json` exactly. The [release workflow](.github/workflows/release.yml) then builds, attests provenance, and drafts the GitHub release. See [CLAUDE.md](CLAUDE.md) for the full process.
 
 ## License
 

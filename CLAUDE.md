@@ -28,6 +28,17 @@ Four source files, each with a single responsibility:
 
 There are no automated tests. Verification is manual: load the plugin into a real Obsidian vault (see README sideload instructions) and exercise the command with a scratch note.
 
+## Release
+
+The plugin is published in the Obsidian community-plugins directory (entry `omnifocus-task-sync`).
+
+1. Bump the version: `npm version <x.y.z> --no-git-tag-version`. The `version` lifecycle script runs [version-bump.mjs](version-bump.mjs), which writes the new version into [manifest.json](manifest.json) and adds a `version → minAppVersion` entry to [versions.json](versions.json). `npm version` also updates [package-lock.json](package-lock.json).
+2. Add a matching entry to [CHANGELOG.md](CHANGELOG.md).
+3. Commit, then push a git tag whose name **exactly** equals the `manifest.json` version (no `v` prefix) — Obsidian's bot requires this.
+4. [.github/workflows/release.yml](.github/workflows/release.yml) fires on the tag: it verifies the tag matches `manifest.json`, builds, attests build provenance for `main.js` (`actions/attest-build-provenance`), and creates a **draft** GitHub release with `main.js` and `manifest.json` attached. Publish the draft manually.
+
+Obsidian's directory consumes `manifest.json` from the repo root plus the GitHub release whose tag matches it; no further submission step is needed after the initial directory PR.
+
 ## Conventions
 
 - TypeScript strict; tabs for indentation (match existing files).
@@ -40,4 +51,5 @@ There are no automated tests. Verification is manual: load the plugin into a rea
 
 - [TODO.md](TODO.md) — deferred enhancement ideas (not a planning doc; user-curated).
 - [README.md](README.md) — user-facing setup, sideload instructions, and field reference.
+- [CHANGELOG.md](CHANGELOG.md) — per-version release notes; update on every version bump.
 - [versions.json](versions.json) / [manifest.json](manifest.json) — version metadata for the Obsidian community plugin marketplace; `version-bump.mjs` keeps them in sync.

@@ -57,7 +57,8 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const data = (await this.loadData()) as Partial<PluginSettings> | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
 	}
 
 	async saveSettings() {
@@ -165,7 +166,7 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 	private resolveTags(file: TFile): string[] {
 		const cache = this.app.metadataCache.getFileCache(file);
 		const fmKey = this.settings.tagsFrontmatterKey;
-		const fmValue = cache?.frontmatter?.[fmKey];
+		const fmValue: unknown = cache?.frontmatter?.[fmKey];
 		if (Array.isArray(fmValue)) {
 			return fmValue.map(String).map((s) => s.trim()).filter(Boolean);
 		}
@@ -181,7 +182,7 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 	private resolveProject(file: TFile): string {
 		const cache = this.app.metadataCache.getFileCache(file);
 		const fmKey = this.settings.projectFrontmatterKey;
-		const fmValue = cache?.frontmatter?.[fmKey];
+		const fmValue: unknown = cache?.frontmatter?.[fmKey];
 		if (typeof fmValue === "string" && fmValue.trim()) return fmValue.trim();
 		return this.settings.defaultProject.trim();
 	}
