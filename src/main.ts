@@ -165,7 +165,7 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 
 	private resolveTags(file: TFile): string[] {
 		const cache = this.app.metadataCache.getFileCache(file);
-		const fmKey = this.settings.tagsFrontmatterKey;
+		const fmKey = this.settings.tagsFrontmatterKey.trim() || "omnifocus_tags";
 		const fmValue: unknown = cache?.frontmatter?.[fmKey];
 		if (Array.isArray(fmValue)) {
 			return fmValue.map(String).map((s) => s.trim()).filter(Boolean);
@@ -181,7 +181,7 @@ export default class TasksToOmnifocusPlugin extends Plugin {
 
 	private resolveProject(file: TFile): string {
 		const cache = this.app.metadataCache.getFileCache(file);
-		const fmKey = this.settings.projectFrontmatterKey;
+		const fmKey = this.settings.projectFrontmatterKey.trim() || "omnifocus_project";
 		const fmValue: unknown = cache?.frontmatter?.[fmKey];
 		if (typeof fmValue === "string" && fmValue.trim()) return fmValue.trim();
 		return this.settings.defaultProject.trim();

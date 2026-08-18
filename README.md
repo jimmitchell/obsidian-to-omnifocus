@@ -69,15 +69,32 @@ With **Preserve task hierarchy** enabled and a hierarchy-capable send mode (Omni
 
 ## Settings
 
+Settings are grouped under four headings. On Obsidian 1.13 and later they are also
+indexed by the settings search box, so you can jump straight to one by typing its name
+(or a related term such as "subtasks", "autosave", or "x-callback").
+
+**Defaults**
+
 | Setting | Default | Notes |
 |---|---|---|
 | Default tags | (empty) | Comma-separated. Applied to every task unless frontmatter overrides. |
 | Default project | (empty = inbox) | Frontmatter overrides per-note. |
-| Tags frontmatter key | `omnifocus_tags` | YAML key on a note that overrides the default tag list. |
-| Project frontmatter key | `omnifocus_project` | YAML key on a note that overrides the default project. |
-| Forward inline `#tags` | off | When on, `#tags` written on a task line are appended to the OmniFocus tag list. |
-| Skip OmniFocus Quick Entry | off | When on, tasks are saved straight to their destination via `autosave=true` instead of opening the Quick Entry window. |
+
+**Frontmatter keys**
+
+| Setting | Default | Notes |
+|---|---|---|
+| Tags frontmatter key | `omnifocus_tags` | YAML key on a note that overrides the default tag list. Cannot be empty. |
+| Project frontmatter key | `omnifocus_project` | YAML key on a note that overrides the default project. Cannot be empty. |
+
+**Sending**
+
+| Setting | Default | Notes |
+|---|---|---|
+| Send mode | URL scheme | See [Send modes](#send-modes) below. |
+| Skip OmniFocus Quick Entry | off | When on, tasks are saved straight to their destination via `autosave=true` instead of opening the Quick Entry window. Greyed out on macOS in OmniAutomation and Plug-in modes, which never open Quick Entry. |
 | Preserve task hierarchy | off | When on, nested checkboxes become real OmniFocus subtasks (in OmniAutomation or Plug-in send mode). URL scheme mode falls back to today's body-folding with a Notice. |
+| Forward inline `#tags` | off | When on, `#tags` written on a task line are appended to the OmniFocus tag list. |
 
 ## Send modes
 

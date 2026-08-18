@@ -1,6 +1,6 @@
 {
 	"name": "omnifocus-task-sync",
-	"version": "0.6.3",
+	"version": "0.7.0",
 	"description": "Send uncompleted tasks from the active note to your OmniFocus inbox.",
 	"main": "main.js",
 	"type": "module",
@@ -23,7 +23,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
 		"esbuild": "^0.20.0",
-		"obsidian": "^1.5.7",
+		"obsidian": "^1.13.1",
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3"
 	},

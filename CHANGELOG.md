@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.7.0
+
+- Settings are now declared with Obsidian 1.13's declarative settings API (`getSettingDefinitions()`), so every setting appears in the settings search box. Search aliases were added so terms like "subtasks", "autosave", "x-callback", and "yaml" find the right setting.
+- Settings are grouped under four headings: Defaults, Frontmatter keys, Sending, and Support.
+- **Skip OmniFocus Quick Entry** is now greyed out on macOS when Send mode is OmniAutomation or Plug-in, where Quick Entry is never opened. It stays available on iOS, which always uses the URL scheme.
+- The frontmatter key fields now show an inline error when left empty instead of silently reverting to the default. An empty stored value still falls back to `omnifocus_tags` / `omnifocus_project` when read.
+- `minAppVersion` is unchanged at 1.5.0. Obsidian versions below 1.13 keep the previous settings UI, which is now rendered from the same definitions so the two cannot drift.
+
 ## 0.6.3
 
 - Release workflow now attests build provenance for `main.js` via `actions/attest-build-provenance`, so the published asset can be cryptographically verified against this repository.

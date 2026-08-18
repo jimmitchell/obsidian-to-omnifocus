@@ -13,7 +13,7 @@ Four source files, each with a single responsibility:
 - [src/main.ts](src/main.ts) — plugin entry. Registers the `send-uncompleted-tasks-to-omnifocus` command, orchestrates the send pipeline, and rewrites checkboxes via `editor.transaction`.
 - [src/parser.ts](src/parser.ts) — extracts checkbox tasks from markdown. Handles indented body blocks, Dataview field extraction (`[due:: …]` etc.), inline `#tag` collection, and the 🚩 flag emoji. Reports invalid field values via `skippedFields`.
 - [src/omnifocus.ts](src/omnifocus.ts) — pure URL builders. `buildOmnifocusUrl` produces the `omnifocus:///add?…` x-callback URL; `buildObsidianUrl` produces an `obsidian://open?…` link embedded in task notes.
-- [src/settings.ts](src/settings.ts) — `PluginSettings` interface, defaults, and the settings tab UI.
+- [src/settings.ts](src/settings.ts) — `PluginSettings` interface, defaults, and the settings tab. The tab is declared with Obsidian 1.13's declarative API (`getSettingDefinitions()`); `display()` remains only as a fallback interpreter for Obsidian < 1.13.
 
 [manifest.json](manifest.json) declares the plugin id (`omnifocus-task-sync`), `minAppVersion: 1.5.0`, and `isDesktopOnly: false` (the plugin works on iOS via the URL scheme).
 
@@ -45,7 +45,9 @@ Obsidian's directory consumes `manifest.json` from the repo root plus the GitHub
 - Obsidian APIs imported from `"obsidian"`. Settings persisted via `loadData` / `saveData`.
 - Keep `omnifocus.ts` pure (no Obsidian imports) — it's the easy unit to reason about and test by hand.
 - New parser fields: extend `TaskFields` in [src/parser.ts](src/parser.ts), add a `case` to `parseTaskLine`'s switch, and push to `skippedFields` for invalid values rather than throwing.
-- Settings UI: follow the `new Setting(containerEl).setName(…).setDesc(…).addToggle(…|.addText(…)|.addDropdown(…))` pattern already established in [src/settings.ts](src/settings.ts).
+- Settings UI: add settings to the array returned by `getSettingDefinitions()` in [src/settings.ts](src/settings.ts) — never to `display()`. That array is the single source of truth; `display()` is a fallback interpreter that walks it for Obsidian < 1.13, so both paths stay in sync automatically. A new setting needs a `name`, `desc`, `aliases` (search synonyms — the reason the settings are searchable at all), and a `control` whose `key` is a `PluginSettings` field. The array is typed `SettingDefinitionItem<keyof PluginSettings>[]`, so a typo'd `key` is a compile error.
+- Requires the `obsidian` devDependency at `^1.13.1` for the declarative settings types. `minAppVersion` stays at 1.5.0 — types only, and the runtime API is feature-detected.
+- `validate` on a control does not sanitize already-stored data. Enforce invariants again at the read site in [src/main.ts](src/main.ts) (see how `resolveTags` / `resolveProject` normalize the frontmatter keys), which also covers the pre-1.13 path where `validate` never runs.
 
 ## Pointers
 
